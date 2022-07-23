@@ -18,9 +18,26 @@ def normalize(images,labels)
     images = tf.cast(images,tf.float32)
     images/= 255
     return images, labels
-train_dataset = train_dataset.map(normalize)
+train_dataset = train_dataset.map(normalize) 
 test_dataset= test_dataset.map(normalize)
-
+#definimos la estructura de la red, especificando la cantidad de capas ocultas y densas y con 64 neuronas cada una
 model = tf.keras.Sequential([
-    tf.keras.layers.Flatten(input_shape=())
+    tf.keras.layers.Flatten(input_shape=(28,28,1)),
+    tf.keras.layers.Dense(64, activation=tf.nn.relu),#para las capas ocultas usamos relu
+    tf.keras.layers.Flatten(10,activation=tf.nn.softmax)#para las capas de salida
+    
 ])
+#compilamos el modelo e indicamos las funciones que vamos a usar
+model.compile(optimizer='adam',
+loss='sparse_categorical_crossentropy',
+metrics=['accuracy']
+)
+#Aprendizaje va a ser por lotes de 32 cada lote
+BATCHSIZE= 32
+train_dataset=train_dataset.repeat().shuffle(num_train_examples)
+test_dataset = test_dataset.batch(BATCHSIZE)
+#Realizando el aprendizaje
+model.fit(
+    train_dataset, epochs=5,
+    steps_per_epoch=math.ceil(num_train_examples/BATCHSIZE)
+)
