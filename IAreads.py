@@ -41,3 +41,28 @@ model.fit(
     train_dataset, epochs=5,
     steps_per_epoch=math.ceil(num_train_examples/BATCHSIZE)
 )
+#Evaluamos nuestro modelo ya entrenado contra el dataset de pruebas
+test_loss, test_accuracy = model.evaluate(test_dataset, steps=math.ceil(num_test_examples/32)
+)
+
+print("Resultado en las pruebas:", test_accuracy)
+
+for test_images, test_labels in dataset.take(1):
+    test_images = test_images.numpy()
+    test_labels = test_labels.numpy()
+    predictions = model.predict(test_images)
+
+def plot_image(i, predictions_array, true_labels, images):
+    predictions_array, true_label, img = predictions_array[i], true_labels[i],images[i]
+    plt.grid(False)
+    plt.xticks([])
+    plt.yticks([])
+
+    plt.imshow(img[...,0], cmap=plt.cm.binary)
+    predicted_label = np.argmax(predictions_array)
+    if predicted_label == true_label:
+        color='blue'
+    else:
+        color='red'
+
+    plt.xlabel("Prediccion:{}".format(class_names[predicted_label]), color=color)
